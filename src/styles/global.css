@@ -1,18 +1,227 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Class-based dark mode: html.dark toggles the palette */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Static design tokens -> generate font utilities */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-hand: "Mansalva", "Inter Variable", ui-sans-serif, cursive;
+}
+
+/* Theme-aware colors. `inline` makes utilities emit var(--ink) directly,
+   so bg-paper / text-ink / border-line flip automatically in dark mode. */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-line: var(--line);
+  --color-grid: var(--grid);
+  --color-accent: var(--accent);
+}
+
+:root {
+  --ink: #1a1a1a;
+  --ink-soft: #5c5a54;
+  --paper: #faf9f6;
+  --paper-soft: #f1efe9;
+  --line: #d9d6cd;
+  --grid: #e4e1d8;
+  --accent: #c8402e;
+  color-scheme: light;
+}
+
+html.dark {
+  --ink: #f4f2ec;
+  --ink-soft: #a4a099;
+  --paper: #0e0e0e;
+  --paper-soft: #191919;
+  --line: #2a2a2a;
+  --grid: #202020;
+  --accent: #e0503d;
+  color-scheme: dark;
+}
 
 @layer base {
-  .root {
-    --color-text-main: 23 23 23; /* #171717 */
-    --color-bg-main: 242 241 236; /* #F2F1EC */
-    --color-bg-muted: 234 233 225; /* #EAE9E1 */
-    --color-border-main: 23 23 23; /* #171717 */
+  html {
+    scroll-behavior: smooth;
+    /* paper + faint engineering-notebook dot grid live on the root so a
+       fixed canvas (z-index:0) can sit above it, below the content (z-index:1) */
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--grid) 1px, transparent 1.4px);
+    background-size: 30px 30px;
+    background-position: -1px -1px;
   }
-  html.dark {
-    --color-text-main: 242 241 236; /* #F2F1EC */
-    --color-bg-main: 23 23 23; /* #171717 */
-    --color-bg-muted: 36 36 36; /* #242424 */
-    --color-border-main: 242 241 236; /* #F2F1EC */
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
+
+  body {
+    background-color: transparent;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+/* Small-caps mono label ("01 / ABOUT") used across sections */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Scroll-reveal: JS adds .in-view when the element enters the viewport */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* Staggered children reveal */
+.reveal[data-delay="1"] {
+  transition-delay: 0.08s;
+}
+.reveal[data-delay="2"] {
+  transition-delay: 0.16s;
+}
+.reveal[data-delay="3"] {
+  transition-delay: 0.24s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---- Section scaffolding shared by About / Work / Writing ---- */
+.section {
+  position: relative;
+  padding: clamp(4.5rem, 11vw, 8.5rem) 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.section-wrap {
+  max-width: 62rem;
+  margin: 0 auto;
+}
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2.75rem;
+}
+.section-title {
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 6vw, 3.6rem);
+  line-height: 1;
+}
+.section-lede {
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  line-height: 1.7;
+  max-width: 40rem;
+}
+.section-lede + .section-lede {
+  margin-top: 1.15rem;
+}
+.link-ink {
+  text-decoration: none;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
+}
+.link-ink:hover {
+  opacity: 0.6;
+}
+
+/* ---- Async image loading: spinner until [.media > img] load/error ---- */
+.media {
+  position: relative;
+  min-height: 7rem;
+}
+.media > img {
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.media.is-loaded > img {
+  opacity: 1;
+}
+.media-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  transition: opacity 0.3s ease;
+}
+.media-loader::before {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 2px solid var(--line);
+  border-top-color: var(--ink);
+  animation: spin 0.8s linear infinite;
+}
+.media.is-loaded .media-loader {
+  opacity: 0;
+  visibility: hidden;
+}
+.media.is-error .media-loader::before {
+  display: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .media-loader::before {
+    animation: none;
+  }
+}
+
+/* Hand-drawn underline used sparingly (the single "red pen" mark) */
+.pen-underline {
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  padding-bottom: 2px;
 }

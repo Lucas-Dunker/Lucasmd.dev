@@ -1,0 +1,108 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource/mansalva";
+import "@fontsource/ibm-plex-mono";
+import "../styles/global.css";
+
+import InkField from "../components/InkField.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import Lightbox from "../components/Lightbox.astro";
+
+const {
+  pageTitle = "Lucas Dunker",
+  description = "Lucas Dunker — computer scientist, builder, and perpetually curious human from Charlotte, NC.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta
+      name="theme-color"
+      content="#faf9f6"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0e0e0e"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <!-- Set theme before paint to avoid a flash -->
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const dark = stored
+          ? stored === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <InkField />
+    <div class="page">
+      <Nav />
+      <main><slot /></main>
+      <Footer />
+    </div>
+    <Lightbox />
+
+    <style>
+      .page {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+      main {
+        flex: 1 1 auto;
+      }
+    </style>
+
+    <!-- Scroll-reveal for [.reveal] elements -->
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add("in-view");
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    </script>
+
+    <!-- Async image loaders: hide the spinner once each .media image resolves -->
+    <script>
+      document.querySelectorAll<HTMLElement>(".media").forEach((m) => {
+        const img = m.querySelector("img");
+        const done = () => m.classList.add("is-loaded");
+        if (!img) return done();
+        if (img.complete && img.naturalWidth > 0) return done();
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener(
+          "error",
+          () => m.classList.add("is-loaded", "is-error"),
+          { once: true },
+        );
+      });
+    </script>
+  </body>
+</html>

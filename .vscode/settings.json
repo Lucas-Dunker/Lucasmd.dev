@@ -1,0 +1,6 @@
+{
+  "//": "Tailwind v4 uses CSS at-rules (@theme, @plugin, @custom-variant, @apply) that the built-in CSS language service doesn't recognize. Silence the false 'Unknown at rule' lint on our design tokens/fonts in global.css.",
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore"
+}

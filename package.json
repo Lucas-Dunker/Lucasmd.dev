@@ -1,56 +1,34 @@
 {
   "name": "personal_site",
   "type": "module",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "pages:dev": "wrangler pages dev --compatibility-date=2024-02-08 -- astro dev",
     "pages:deploy": "astro build && wrangler pages deploy ./dist"
   },
   "dependencies": {
-    "@astrojs/check": "^0.5.3",
-    "@astrojs/cloudflare": "^9.0.0",
-    "@astrojs/react": "^3.0.10",
-    "@astrojs/rss": "^4.0.5",
-    "@astrojs/sitemap": "^3.0.5",
-    "@astrojs/tailwind": "^5.1.0",
-    "@fontsource-variable/inter": "^5.0.17",
-    "@fontsource/architects-daughter": "^5.2.7",
-    "@fontsource/bebas-neue": "^5.0.19",
-    "@fontsource/dm-sans": "^5.0.21",
-    "@fontsource/dm-serif-display": "^5.0.19",
-    "@fontsource/just-another-hand": "^5.0.8",
-    "@fontsource/mansalva": "^5.2.7",
-    "@fontsource/permanent-marker": "^5.2.7",
-    "@tsparticles/preset-links": "^3.1.0",
-    "@tsparticles/react": "^3.0.0",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19",
-    "@typescript-eslint/parser": "^5.62.0",
-    "astro": "^4.3.6",
-    "astro-icon": "^1.1.0",
-    "eslint": "^8.57.0",
-    "prettier": "^3.2.5",
-    "prettier-eslint": "^16.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-draggable": "^4.4.6",
-    "sass": "^1.72.0",
-    "tailwindcss": "^3.4.1",
-    "tailwindcss-animated": "^1.0.1",
-    "typescript": "^5"
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/sitemap": "^3.4.0",
+    "@fontsource-variable/inter": "^5.2.5",
+    "@fontsource/ibm-plex-mono": "^5.2.5",
+    "@fontsource/mansalva": "^5.2.5",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.4",
+    "astro": "^5.7.4",
+    "astro-icon": "^1.1.5",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240208.0",
-    "@tailwindcss/typography": "^0.5.10",
-    "wrangler": "^3.28.1"
+    "prettier": "^3.5.3",
+    "wrangler": "^3.114.1"
   },
   "engines": {
     "npm": ">=2.0",
-    "node": ">=20.5.0"
+    "node": ">=20.3.0"
   }
 }

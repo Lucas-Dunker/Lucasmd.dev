@@ -1,0 +1,166 @@
+---
+// Global image viewer. Any element with [data-zoomable] opens this modal
+// showing its full-size image in a box that matches the site theme.
+---
+
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
+  <div class="lb-backdrop" data-lb-close></div>
+  <figure class="lb-box">
+    <button type="button" class="lb-close" data-lb-close aria-label="Close image viewer">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+    <img id="lb-img" src="" alt="" />
+    <figcaption id="lb-cap" class="eyebrow"></figcaption>
+  </figure>
+</div>
+
+<style>
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 3rem);
+  }
+  .lightbox[hidden] {
+    display: none;
+  }
+  .lb-backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--paper) 55%, transparent);
+    backdrop-filter: blur(8px) saturate(1.1);
+    animation: lb-fade 0.25s ease both;
+  }
+  .lb-box {
+    position: relative;
+    margin: 0;
+    max-width: min(92vw, 60rem);
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: clamp(0.75rem, 2vw, 1.15rem);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 24px 70px -30px rgba(0, 0, 0, 0.55);
+    animation: lb-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  #lb-img {
+    display: block;
+    max-width: 100%;
+    max-height: 76vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    margin: 0 auto;
+  }
+  #lb-cap {
+    text-align: center;
+  }
+  #lb-cap:empty {
+    display: none;
+  }
+  .lb-close {
+    position: absolute;
+    top: -0.75rem;
+    right: -0.75rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      transform 0.15s ease;
+  }
+  .lb-close:hover {
+    background: var(--paper-soft);
+    border-color: var(--ink);
+  }
+  .lb-close:active {
+    transform: scale(0.92);
+  }
+
+  @keyframes lb-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes lb-pop {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lb-backdrop,
+    .lb-box {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lb-img") as HTMLImageElement | null;
+  const cap = document.getElementById("lb-cap");
+
+  if (lb && img && cap) {
+    let lastFocus: HTMLElement | null = null;
+
+    const open = (src: string, caption: string, alt: string) => {
+      img.src = src;
+      img.alt = alt;
+      cap.textContent = caption;
+      lb.hidden = false;
+      document.body.style.overflow = "hidden";
+      lastFocus = document.activeElement as HTMLElement;
+      (lb.querySelector(".lb-close") as HTMLElement | null)?.focus();
+    };
+
+    const close = () => {
+      lb.hidden = true;
+      img.src = "";
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    };
+
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const zoom = target.closest<HTMLImageElement>("[data-zoomable]");
+      if (zoom) {
+        e.preventDefault();
+        open(
+          zoom.currentSrc || zoom.src,
+          zoom.getAttribute("data-caption") || "",
+          zoom.getAttribute("alt") || ""
+        );
+        return;
+      }
+      if (target.closest("[data-lb-close]")) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!lb.hidden && e.key === "Escape") close();
+    });
+  }
+</script>

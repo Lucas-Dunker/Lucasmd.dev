@@ -1,0 +1,154 @@
+---
+const RESUME_URL =
+  "https://drive.google.com/file/d/10oqsUqzXLgK70DD2r6BfWbuYJLyKgWH0/view";
+const GITHUB_URL = "https://github.com/Lucas-Dunker";
+const GITHUB_USER = "Lucas-Dunker";
+---
+
+<section id="work" class="section">
+  <div class="section-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">02 / Work</span>
+      <h2 class="section-title">What I make</h2>
+    </div>
+
+    <p class="section-lede reveal">
+      No matter what, there's always something I'm building, testing, or
+      tinkering with in my spare time. Between open-source work and freelance
+      projects, my <a class="link-ink" href={GITHUB_URL}>GitHub</a> is the most honest
+      changelog of what I'm up to. Like what you see?
+      <a class="link-ink" href="mailto:lucasmd.dev@gmail.com"> Come say hi! </a>
+    </p>
+    <p class="section-lede reveal" data-delay="1">
+      I've also heard there are a few secret subdomains hiding on this site, but
+      you didn't hear that from me!
+    </p>
+
+    <div class="contrib reveal" data-delay="1">
+      <span class="eyebrow">Contribution graph — last year on GitHub</span>
+      <a
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener"
+        class="contrib-frame media"
+        aria-label="My GitHub contribution graph"
+      >
+        <span class="media-loader">loading graph</span>
+        <img
+          class="contrib-img"
+          src={`https://ghchart.rshah.org/1a1a1a/${GITHUB_USER}`}
+          alt={`${GITHUB_USER} GitHub contribution graph`}
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+    </div>
+
+    <div class="resume reveal" data-delay="2">
+      <span class="eyebrow">Where I've worked</span>
+      <div class="resume-actions">
+        <a class="btn" href={RESUME_URL} target="_blank" rel="noopener">
+          View résumé
+          <svg
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M7 17 17 7M8 7h9v9"></path>
+          </svg>
+        </a>
+        <a class="btn ghost" href={GITHUB_URL} target="_blank" rel="noopener">
+          GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contrib {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .contrib-frame {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper-soft);
+    padding: 1.15rem 1.25rem;
+    overflow-x: auto;
+    transition: border-color 0.2s ease;
+  }
+  .contrib-frame:hover {
+    border-color: var(--ink);
+  }
+  .contrib-img {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    height: auto;
+    /* one ink-colored graph, grayscaled; inverted in dark so it reads as
+       light-on-dark and matches the notebook palette in both themes */
+    filter: grayscale(1) contrast(1.05);
+  }
+  :global(html.dark) .contrib-img {
+    filter: grayscale(1) invert(1) contrast(1.05);
+  }
+
+  .resume {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .resume-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--paper);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 9999px;
+    transition:
+      transform 0.15s ease,
+      opacity 0.2s ease;
+  }
+  .btn:hover {
+    opacity: 0.85;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn.ghost {
+    color: var(--ink);
+    background: transparent;
+  }
+  .btn.ghost:hover {
+    background: var(--paper-soft);
+    opacity: 1;
+  }
+
+  @media (max-width: 560px) {
+    .contrib-frame {
+      padding: 0.85rem;
+    }
+  }
+</style>

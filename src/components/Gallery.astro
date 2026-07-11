@@ -1,0 +1,82 @@
+---
+import type { ImageMetadata } from "astro";
+
+interface Item {
+  src: ImageMetadata;
+  label: string;
+}
+interface Props {
+  items: Item[];
+  caption?: string;
+}
+const { items, caption } = Astro.props;
+---
+
+<figure class="gallery">
+  <ul class="gallery-grid">
+    {
+      items.map((it) => (
+        <li class="gallery-item">
+          <img
+            src={it.src.src}
+            width={it.src.width}
+            height={it.src.height}
+            alt={it.label}
+            title={it.label}
+            data-zoomable
+            data-caption={it.label}
+            loading="lazy"
+            decoding="async"
+          />
+        </li>
+      ))
+    }
+  </ul>
+  {caption && <figcaption class="gallery-cap eyebrow">{caption}</figcaption>}
+</figure>
+
+<style>
+  .gallery {
+    margin: 0;
+  }
+  .gallery-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .gallery-item {
+    width: 4.4rem;
+    height: 4.4rem;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: zoom-in;
+    filter: grayscale(1) contrast(1.05);
+    transition:
+      filter 0.35s ease,
+      transform 0.35s ease;
+  }
+  .gallery-item:hover img {
+    filter: grayscale(0);
+    transform: scale(1.08);
+  }
+  .gallery-cap {
+    display: block;
+    margin-top: 0.85rem;
+  }
+  @media (max-width: 560px) {
+    .gallery-item {
+      width: 3.6rem;
+      height: 3.6rem;
+    }
+  }
+</style>

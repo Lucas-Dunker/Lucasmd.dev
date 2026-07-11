@@ -1,0 +1,234 @@
+---
+// Ink flow-field background: thin ink strokes drift along a Perlin-style
+// noise field, leaving fading trails, and swirl around the cursor. Pure
+// canvas, no dependencies. Sits above the paper grid, below page content.
+---
+
+<div class="ink-field" aria-hidden="true">
+  <canvas id="ink-canvas"></canvas>
+</div>
+
+<style>
+  .ink-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .ink-field canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script>
+  type Vec = { x: number; y: number; px: number; py: number; life: number };
+
+  const canvas = document.getElementById(
+    "ink-canvas",
+  ) as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext("2d") ?? null;
+
+  if (canvas && ctx) {
+    const TAU = Math.PI * 2;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // --- Perlin-ish gradient noise (public-domain style, seeded, no deps) ---
+    const makeNoise = (seed: number) => {
+      const p = new Uint8Array(256);
+      for (let i = 0; i < 256; i++) p[i] = i;
+      let s = seed >>> 0;
+      const rand = () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
+      for (let i = 255; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        const t = p[i];
+        p[i] = p[j];
+        p[j] = t;
+      }
+      const perm = new Uint8Array(512);
+      for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+      const fade = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      const grad = (h: number, x: number, y: number) => {
+        const g = h & 7;
+        const u = g < 4 ? x : y;
+        const v = g < 4 ? y : x;
+        return (g & 1 ? -u : u) + (g & 2 ? -v : v);
+      };
+      return (x: number, y: number) => {
+        const X = Math.floor(x) & 255;
+        const Y = Math.floor(y) & 255;
+        x -= Math.floor(x);
+        y -= Math.floor(y);
+        const u = fade(x);
+        const v = fade(y);
+        const aa = perm[perm[X] + Y];
+        const ab = perm[perm[X] + Y + 1];
+        const ba = perm[perm[X + 1] + Y];
+        const bb = perm[perm[X + 1] + Y + 1];
+        return lerp(
+          lerp(grad(aa, x, y), grad(ba, x - 1, y), u),
+          lerp(grad(ab, x, y - 1), grad(bb, x - 1, y - 1), u),
+          v,
+        );
+      };
+    };
+    const noise = makeNoise(20260711);
+
+    // --- theme-aware ink color ---
+    let ink = "26, 26, 26";
+    const readInk = () => {
+      const dark = document.documentElement.classList.contains("dark");
+      ink = dark ? "244, 242, 236" : "26, 26, 26";
+    };
+    readInk();
+    new MutationObserver(readInk).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    // --- sizing (DPR-aware; we draw in CSS pixels) ---
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+    let particles: Vec[] = [];
+
+    const NOISE_SCALE = 0.0016;
+    const FIELD_TURNS = 2.4; // how much the field curls
+    const SPEED = 0.9;
+    const CURSOR_R = 170;
+    const pointer = { x: -9999, y: -9999, active: false };
+
+    const spawn = (v: Vec) => {
+      v.x = v.px = Math.random() * w;
+      v.y = v.py = Math.random() * h;
+      v.life = 60 + Math.random() * 260;
+    };
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const target = Math.min(Math.round((w * h) / 9000), 260);
+      particles = new Array(target).fill(0).map(() => {
+        const v: Vec = { x: 0, y: 0, px: 0, py: 0, life: 0 };
+        spawn(v);
+        return v;
+      });
+    };
+
+    let t = 0;
+    const step = () => {
+      // fade previous strokes without painting over the grid: reduce alpha only.
+      // higher alpha => shorter trails, so dense flow regions can't accumulate.
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = "rgba(0,0,0,0.09)";
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.globalCompositeOperation = "source-over";
+      ctx.lineCap = "round";
+      t += 0.0009;
+
+      for (const v of particles) {
+        v.px = v.x;
+        v.py = v.y;
+
+        let angle =
+          noise(v.x * NOISE_SCALE, v.y * NOISE_SCALE + t) * TAU * FIELD_TURNS;
+        let vx = Math.cos(angle) * SPEED;
+        let vy = Math.sin(angle) * SPEED;
+
+        // cursor swirl + gentle pull
+        if (pointer.active) {
+          const dx = pointer.x - v.x;
+          const dy = pointer.y - v.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < CURSOR_R * CURSOR_R) {
+            const d = Math.sqrt(d2) || 1;
+            const f = (1 - d / CURSOR_R) * 2.6;
+            // perpendicular = swirl, plus a little inward pull
+            vx += (-dy / d) * f + (dx / d) * f * 0.25;
+            vy += (dx / d) * f + (dy / d) * f * 0.25;
+          }
+        }
+
+        v.x += vx;
+        v.y += vy;
+        v.life -= 1;
+
+        if (
+          v.life <= 0 ||
+          v.x < -20 ||
+          v.x > w + 20 ||
+          v.y < -20 ||
+          v.y > h + 20
+        ) {
+          spawn(v);
+          continue;
+        }
+
+        const speed = Math.hypot(v.x - v.px, v.y - v.py);
+        const alpha = Math.min(0.4, 0.1 + speed * 0.1);
+        ctx.strokeStyle = `rgba(${ink}, ${alpha})`;
+        ctx.lineWidth = 0.85 + Math.min(speed * 0.18, 0.9);
+        ctx.beginPath();
+        ctx.moveTo(v.px, v.py);
+        ctx.lineTo(v.x, v.y);
+        ctx.stroke();
+      }
+    };
+
+    let raf = 0;
+    const loop = () => {
+      step();
+      raf = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    // pointer tracking
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        pointer.x = e.clientX;
+        pointer.y = e.clientY;
+        pointer.active = true;
+      },
+      { passive: true },
+    );
+    window.addEventListener("pointerout", () => (pointer.active = false));
+
+    // resize (debounced)
+    let rz = 0;
+    window.addEventListener("resize", () => {
+      clearTimeout(rz);
+      rz = window.setTimeout(resize, 180);
+    });
+
+    // pause when tab hidden
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop();
+      else if (!reduceMotion) start();
+    });
+
+    resize();
+    if (reduceMotion) {
+      // render a single faint static field, then hold
+      for (let i = 0; i < 90; i++) step();
+    } else {
+      start();
+    }
+  }
+</script>

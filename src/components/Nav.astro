@@ -1,0 +1,169 @@
+---
+import ThemeIcon from "./ThemeIcon.astro";
+
+const links = [
+  { href: "#about", label: "About", n: "01" },
+  { href: "#work", label: "Work", n: "02" },
+  { href: "#writing", label: "Writing", n: "03" },
+];
+---
+
+<header id="site-nav" class="site-nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand" aria-label="Back to top">Lucas Dunker</a>
+    <nav class="nav-links" aria-label="Primary">
+      {
+        links.map((l) => (
+          <a href={l.href} class="nav-link" data-target={l.href}>
+            <span class="nav-n">{l.n}</span>
+            {l.label}
+          </a>
+        ))
+      }
+      <ThemeIcon />
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      backdrop-filter 0.35s ease;
+  }
+  .site-nav.scrolled {
+    background: color-mix(in srgb, var(--paper) 78%, transparent);
+    backdrop-filter: blur(10px) saturate(1.1);
+    border-bottom-color: var(--line);
+  }
+
+  .nav-inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .brand {
+    font-family: var(--font-hand);
+    font-size: 1.35rem;
+    line-height: 1;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease;
+    pointer-events: none;
+  }
+  .site-nav.scrolled .brand {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: opacity 0.2s ease;
+  }
+  .nav-n {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0.6rem;
+    right: 0.6rem;
+    bottom: 0.25rem;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    transform: scaleX(1);
+  }
+  .nav-link:active {
+    transform: scale(0.97);
+  }
+
+  @media (max-width: 560px) {
+    .nav-inner {
+      padding: 0.7rem 1rem;
+    }
+    .brand {
+      font-size: 1.1rem;
+    }
+    .nav-link {
+      padding: 0.35rem 0.45rem;
+      font-size: 0.85rem;
+    }
+    .nav-n {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById("site-nav");
+
+  // paper bar + brand appear after leaving the hero
+  const onScroll = () => {
+    if (!nav) return;
+    nav.classList.toggle("scrolled", window.scrollY > 64);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // active-link highlight tied to the section in view
+  const linkFor = (id: string) =>
+    document.querySelector<HTMLAnchorElement>(`.nav-link[data-target="#${id}"]`);
+  const sections = ["about", "work", "writing"]
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => !!el);
+
+  if (sections.length) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            document
+              .querySelectorAll(".nav-link.active")
+              .forEach((a) => a.classList.remove("active"));
+            linkFor(e.target.id)?.classList.add("active");
+          }
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    sections.forEach((s) => spy.observe(s));
+  }
+</script>

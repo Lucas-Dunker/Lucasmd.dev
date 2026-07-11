@@ -1,0 +1,108 @@
+---
+import Gallery from "../Gallery.astro";
+
+import Bierstadt_Mountains from "../../assets/aboutPictures/Bierstadt_Mountains.jpg";
+import Monet_Spring from "../../assets/aboutPictures/Monet_Spring.jpg";
+import Monet_Sunset from "../../assets/aboutPictures/Monet_Sunset.jpg";
+import Nighthawks from "../../assets/aboutPictures/Nighthawks.jpg";
+import Quixote_Demons from "../../assets/aboutPictures/Quixote_Demons.jpg";
+import Saturn_Son from "../../assets/aboutPictures/Saturn_Son.jpg";
+import Skeleton_Cigarette from "../../assets/aboutPictures/Skeleton_Cigarette.jpg";
+import Sublime from "../../assets/aboutPictures/Sublime.jpg";
+import Wizard_Tower from "../../assets/aboutPictures/Wizard_Tower.jpg";
+
+const paintings = [
+  { src: Bierstadt_Mountains, label: "Bierstadt — Among the Sierra Nevada" },
+  { src: Monet_Spring, label: "Monet — Spring" },
+  { src: Monet_Sunset, label: "Monet — Sunset" },
+  { src: Nighthawks, label: "Hopper — Nighthawks" },
+  { src: Quixote_Demons, label: "Quixote & the Demons" },
+  { src: Saturn_Son, label: "Goya — Saturn Devouring His Son" },
+  {
+    src: Skeleton_Cigarette,
+    label: "Van Gogh — Skull with a Burning Cigarette",
+  },
+  { src: Sublime, label: "The Sublime" },
+  { src: Wizard_Tower, label: "The Wizard's Tower" },
+];
+---
+
+<section id="about" class="section">
+  <div class="section-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">01 / About</span>
+      <h2 class="section-title">Who I am</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-main">
+        <p class="section-lede reveal">
+          Hey! <span class="wave">👋</span> I'm Lucas, software engineer from Charlotte,
+          North Carolina.
+        </p>
+        <p class="section-lede reveal" data-delay="1">
+          Developer, traveler, and musician by day. At night, I sleep.
+        </p>
+      </div>
+
+      <aside class="about-aside">
+        <div class="now-playing reveal">
+          <span class="eyebrow">Now playing</span>
+          <a
+            href="https://www.last.fm/user/LucasDunker"
+            class="np-link media"
+            aria-label="My recent Last.fm scrobbles"
+          >
+            <span class="media-loader">loading</span>
+            <img
+              src="https://lastfm-recently-played.vercel.app/api?user=LucasDunker&count=4"
+              alt="Recently played tracks on Last.fm"
+              loading="lazy"
+              width="400"
+              height="360"
+            />
+          </a>
+        </div>
+
+        <div class="reveal" data-delay="1">
+          <Gallery items={paintings} caption="Some paintings from my past" />
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .about-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+  }
+  .now-playing {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .np-link {
+    display: block;
+    max-width: 22rem;
+  }
+  .np-link img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+
+  @media (max-width: 780px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

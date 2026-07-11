@@ -1,30 +1,27 @@
 import { defineConfig, passthroughImageService } from "astro/config";
-import cloudflare from "@astrojs/cloudflare";
-import tailwind from "@astrojs/tailwind";
-import react from "@astrojs/react";
+import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
-
 import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "server",
+  output: "static",
   site: "https://lucasdunker.com",
-  integrations: [tailwind(), react(), sitemap(), icon()],
-  adapter: cloudflare({}),
+  integrations: [sitemap(), icon()],
   image: {
-    service: passthroughImageService()
+    service: passthroughImageService(),
   },
   prefetch: {
     defaultStrategy: "load",
-    prefetchAll: true
+    prefetchAll: true,
   },
   vite: {
+    plugins: [tailwindcss()],
     server: {
       watch: {
         usePolling: true,
-        interval: 1000
-      }
-    }
-  }
+        interval: 1000,
+      },
+    },
+  },
 });

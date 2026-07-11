@@ -1,0 +1,82 @@
+---
+import Gallery from "../Gallery.astro";
+import chairGif from "../../assets/LucasMD-Chair-cropped.gif";
+
+import Kilimanjaro from "../../assets/writingPictures/Kilimanjaro.jpeg";
+import Zermatt from "../../assets/writingPictures/Zermatt.jpeg";
+import Pisgah from "../../assets/writingPictures/Pisgah.jpg";
+import WATERFALL from "../../assets/writingPictures/WATERFALL.jpg";
+import Sunset from "../../assets/writingPictures/Sunset.jpg";
+import Summit from "../../assets/writingPictures/Summit.jpg";
+
+const photos = [
+  { src: Kilimanjaro, label: "Kilimanjaro" },
+  { src: Zermatt, label: "Zermatt" },
+  { src: Pisgah, label: "Pisgah" },
+  { src: WATERFALL, label: "The Smokies" },
+  { src: Sunset, label: "Sunset" },
+  { src: Summit, label: "Fuji" },
+];
+---
+
+<section id="writing" class="section">
+  <div class="section-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">03 / Writing</span>
+      <h2 class="section-title">What I'm up to</h2>
+    </div>
+
+    <div class="writing-grid">
+      <div class="writing-body">
+        <p class="section-lede reveal">
+          A field notebook of essays, trip reports, and things I'm thinking
+          through is on its way — for real this time!
+        </p>
+
+        <div class="reveal" data-delay="2">
+          <Gallery items={photos} caption="Where I've been" />
+        </div>
+      </div>
+
+      <figure class="writing-figure reveal" data-delay="1">
+        <img
+          src={chairGif.src}
+          alt="Lucas, animated, in a chair"
+          class="chair"
+          loading="lazy"
+        />
+        <figcaption class="eyebrow">that's me! ^</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .writing-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.9fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .writing-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+  .writing-figure .chair {
+    width: 100%;
+    height: auto;
+    display: block;
+    mix-blend-mode: multiply;
+  }
+  :global(html.dark) .writing-figure .chair {
+    mix-blend-mode: screen;
+  }
+  @media (max-width: 780px) {
+    .writing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

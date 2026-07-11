@@ -1,54 +1,89 @@
 ---
 import { Icon } from "astro-icon/components";
 import lucasMDGif from "../assets/LucasMD.gif";
-const date = new Date();
-const currentYear = date.getFullYear();
+const currentYear = new Date().getFullYear();
 ---
 
-<footer
-  class="animate-fade animate-once animate-duration-[500ms] animate-delay-1000 animate-ease-in-out"
->
-  <div>
-    <span> </span>Made with ♥ + 💪 | © {currentYear} Lucas Dunker. All rights reserved.
-    |
-    <a href="https://www.linkedin.com/in/lucasdunker/" class="footer-icon"
-      ><Icon name="linkedin" class="inline mx-1 mb-1 w-[1.5rem] h-[1.5rem]" />
-    </a>
-    <a href="https://github.com/Lucas-Dunker" class="footer-icon"
-      ><Icon name="github" class="inline mx-1 mb-1 w-[1.5rem] h-[1.5rem]" /></a
-    >
-    <a href="mailto:dunker.l@northeastern.edu" class="footer-icon"
-      ><Icon name="email" class="inline mx-1 mb-1 w-[1.5rem] h-[1.5rem]" /></a
-    >
-    <a href="https://lucasmd.dev" class="footer-icon"
-      ><img
-        src={lucasMDGif.src}
-        alt="Lucas MD"
-        class="inline mx-1 mb-1 w-[5rem] h-[2rem]"
-      />
-    </a>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <a href="https://lucasmd.dev" class="md-link" aria-label="lucasmd.dev">
+        <img src={lucasMDGif.src} alt="Lucas MD" class="md-gif" />
+      </a>
+      <span class="footer-meta eyebrow">
+        Made with ♥ &amp; ☕ · © {currentYear} Lucas Dunker
+      </span>
+    </div>
+
+    <nav class="socials" aria-label="Social links">
+      <a href="https://www.linkedin.com/in/lucasdunker/" aria-label="LinkedIn">
+        <Icon name="linkedin" class="ico" />
+      </a>
+      <a href="https://github.com/Lucas-Dunker" aria-label="GitHub">
+        <Icon name="github" class="ico" />
+      </a>
+      <a href="mailto:lucasmd.dev@gmail.com" aria-label="Email">
+        <Icon name="email" class="ico" />
+      </a>
+    </nav>
   </div>
-
-  <style>
-    footer {
-      width: 100vw;
-      text-align: center;
-      padding: 3rem 2rem;
-      margin-top: auto;
-      overflow: hidden;
-    }
-
-    .footer-icon {
-      display: inline-block;
-      transition: opacity 0.3s ease;
-
-      &:hover {
-        opacity: 0.85;
-      }
-
-      &:active {
-        transform: scale(0.97);
-      }
-    }
-  </style>
 </footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding: 2.5rem 1.5rem;
+  }
+  .footer-inner {
+    max-width: 62rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .md-gif {
+    width: 5rem;
+    height: 2rem;
+    object-fit: contain;
+  }
+  .footer-meta {
+    line-height: 1.4;
+  }
+  .socials {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .socials a {
+    display: inline-flex;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    transition:
+      background-color 0.2s ease,
+      transform 0.15s ease;
+  }
+  .socials a:hover {
+    background: var(--paper-soft);
+  }
+  .socials a:active {
+    transform: scale(0.94);
+  }
+  .ico {
+    width: 1.35rem;
+    height: 1.35rem;
+    color: var(--ink);
+  }
+  @media (max-width: 560px) {
+    .footer-inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

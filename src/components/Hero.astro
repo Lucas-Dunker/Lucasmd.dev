@@ -1,0 +1,130 @@
+---
+// Full-height opening: just the name, a one-line mono subtitle, a scroll cue.
+---
+
+<section id="top" class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Sunnyvale CA &middot; Charlotte, NC</p>
+    <h1 class="hero-name">Lucas&nbsp;Dunker</h1>
+    <p class="hero-sub">Software Engineer @ SpaceX</p>
+  </div>
+
+  <a href="#about" class="scroll-cue" aria-label="Scroll to content">
+    <span>scroll</span>
+    <span class="scroll-line"></span>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 1.4rem;
+    opacity: 0;
+    animation: rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+  }
+
+  .hero-name {
+    font-family: var(--font-hand);
+    font-weight: 400;
+    line-height: 0.95;
+    font-size: clamp(3.4rem, 15vw, 11rem);
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: rise 1.7s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+  }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    margin-top: 1.6rem;
+    font-size: clamp(0.85rem, 2.4vw, 1.05rem);
+    color: var(--ink-soft);
+    max-width: 34rem;
+    text-align: left;
+    opacity: 0;
+    animation: rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.95s forwards;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    opacity: 0;
+    animation: rise 1.3s ease 1.5s forwards;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 46px;
+    background: linear-gradient(var(--ink-soft), transparent);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    animation: drip 2.2s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes drip {
+    0% {
+      transform: translateY(-100%);
+    }
+    60%,
+    100% {
+      transform: translateY(100%);
+    }
+  }
+  .scroll-cue {
+    transform: translateX(-50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-eyebrow,
+    .hero-name,
+    .hero-sub,
+    .scroll-cue {
+      opacity: 1;
+      animation: none;
+    }
+    .scroll-line::after {
+      animation: none;
+    }
+  }
+</style>
