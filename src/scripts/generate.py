@@ -35,7 +35,7 @@ import tempfile
 
 # Dark -> light. Index 0 is background; 1..N are the glyph levels.
 RAMP = " .:-=+*#%@"
-TINTS = ["#33210f", "#5a4133", "#9c7d6a", "#e3c4b5"]  # hair -> face
+TINTS = ["#704921", "#88624d", "#bd9780", "#f4d3c3"]  # hair -> face
 SHINE = "w"  # sunglasses shine
 BLANK = " "  # background spaces
 SEP = "|"    # separator
