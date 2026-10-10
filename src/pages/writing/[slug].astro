@@ -1,0 +1,134 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPosts, postHref, formatDate, type Post } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  // sort newest first
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, older: posts[i + 1], newer: posts[i - 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  older?: Post;
+  newer?: Post;
+}
+const { post, older, newer } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout
+  pageTitle={`${post.data.title} - Lucas Dunker`}
+  description={post.data.description ?? `${post.data.title}, by Lucas Dunker`}
+>
+  <article class="post">
+    <div class="post-wrap">
+      <header class="post-head">
+        <a href="/#writing" class="eyebrow back">&larr; What I'm up to</a>
+        <h1 class="post-title">{post.data.title}</h1>
+        <p class="eyebrow post-date">
+          <time datetime={post.data.date.toISOString()}>
+            {formatDate(post.data.date)}
+          </time>
+          {post.data.draft && <span class="draft">draft</span>}
+        </p>
+      </header>
+
+      <div class="post-body">
+        <Content />
+      </div>
+
+      {
+        (older || newer) && (
+          <nav class="post-nav" aria-label="More posts">
+            {older ? (
+              <a href={postHref(older)} class="post-nav-link">
+                <span class="eyebrow">Older</span>
+                {older.data.title}
+              </a>
+            ) : (
+              <span />
+            )}
+            {newer && (
+              <a href={postHref(newer)} class="post-nav-link is-next">
+                <span class="eyebrow">Newer</span>
+                {newer.data.title}
+              </a>
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post {
+    padding: clamp(6rem, 12vw, 9rem) 1.5rem clamp(4rem, 9vw, 6.5rem);
+  }
+  .post-wrap {
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+  .post-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2.75rem;
+  }
+  .back {
+    text-decoration: none;
+    width: fit-content;
+    transition: opacity 0.2s ease;
+  }
+  .back:hover {
+    opacity: 0.6;
+  }
+  .post-title {
+    font-family: var(--font-hand);
+    font-weight: 400;
+    font-size: clamp(2.1rem, 6vw, 3.4rem);
+    line-height: 1.1;
+  }
+  .post-date {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+  }
+  .draft {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    color: var(--accent);
+  }
+
+  .post-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: 4rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .post-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    max-width: 18rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: opacity 0.2s ease;
+  }
+  .post-nav-link.is-next {
+    text-align: right;
+    margin-left: auto;
+  }
+  .post-nav-link:hover {
+    opacity: 0.6;
+  }
+</style>

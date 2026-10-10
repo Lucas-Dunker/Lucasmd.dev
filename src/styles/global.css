@@ -225,3 +225,101 @@ html.dark {
   background-size: 100% 2px;
   padding-bottom: 2px;
 }
+
+/* ---- Blog post body content ---- */
+.post-body {
+  font-size: clamp(1.02rem, 2.2vw, 1.12rem);
+  line-height: 1.75;
+}
+.post-body > * + * {
+  margin-top: 1.25rem;
+}
+.post-body h2,
+.post-body h3 {
+  font-family: var(--font-hand);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 2.5rem;
+}
+.post-body h2 {
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+}
+.post-body h3 {
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+}
+.post-body a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
+}
+.post-body a:hover {
+  opacity: 0.6;
+}
+.post-body ul,
+.post-body ol {
+  padding-left: 1.4rem;
+}
+.post-body li + li {
+  margin-top: 0.4rem;
+}
+.post-body ul {
+  list-style: disc;
+}
+.post-body ol {
+  list-style: decimal;
+}
+.post-body blockquote {
+  border-left: 2px solid var(--line);
+  padding-left: 1.1rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+.post-body pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+}
+/* Shiki paints the block itself; the inline-code chrome would double up. */
+.post-body pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.post-body img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.post-body hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin-top: 2.5rem;
+}
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.post-body th,
+.post-body td {
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}

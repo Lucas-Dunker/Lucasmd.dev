@@ -2,19 +2,26 @@
 import ThemeIcon from "./ThemeIcon.astro";
 
 const links = [
-  { href: "#about", label: "About", n: "01" },
-  { href: "#work", label: "Work", n: "02" },
-  { href: "#writing", label: "Writing", n: "03" },
+  { hash: "#about", label: "About", n: "01" },
+  { hash: "#work", label: "Work", n: "02" },
+  { hash: "#writing", label: "Writing", n: "03" },
 ];
+
+// The sections only exist on the home page, so off it (a /writing/<slug> post)
+// the same hashes have to point back at "/". data-target stays the bare hash --
+// it is what the scroll-spy below matches on, and it no-ops where there are no
+// sections to observe.
+const atHome = Astro.url.pathname === "/";
+const to = (hash: string) => (atHome ? hash : `/${hash}`);
 ---
 
 <header id="site-nav" class="site-nav">
   <div class="nav-inner">
-    <a href="#top" class="brand" aria-label="Back to top">Lucas Dunker</a>
+    <a href={to("#top")} class="brand" aria-label="Back to top">Lucas Dunker</a>
     <nav class="nav-links" aria-label="Primary">
       {
         links.map((l) => (
-          <a href={l.href} class="nav-link" data-target={l.href}>
+          <a href={to(l.hash)} class="nav-link" data-target={l.hash}>
             <span class="nav-n">{l.n}</span>
             {l.label}
           </a>

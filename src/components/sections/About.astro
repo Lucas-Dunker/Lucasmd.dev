@@ -1,5 +1,6 @@
 ---
 import Gallery from "../Gallery.astro";
+import AsciiHead from "../hero-ascii/AsciiHead.astro";
 
 import Bierstadt_Mountains from "../../assets/aboutPictures/Bierstadt_Mountains.jpg";
 import Monet_Spring from "../../assets/aboutPictures/Monet_Spring.jpg";
@@ -23,7 +24,6 @@ const paintings = [
     label: "Van Gogh — Skull with a Burning Cigarette",
   },
   { src: Sublime, label: "The Sublime" },
-  { src: Wizard_Tower, label: "The Wizard's Tower" },
 ];
 ---
 
@@ -43,6 +43,9 @@ const paintings = [
         <p class="section-lede reveal" data-delay="1">
           Developer, traveler, and musician by day. At night, I sleep.
         </p>
+        <div class="about-ascii reveal" data-delay="2">
+          <AsciiHead />
+        </div>
       </div>
 
       <aside class="about-aside">
@@ -65,7 +68,7 @@ const paintings = [
         </div>
 
         <div class="reveal" data-delay="1">
-          <Gallery items={paintings} caption="Some paintings from my past" />
+          <Gallery items={paintings} caption="Some of my favorites" />
         </div>
       </aside>
     </div>

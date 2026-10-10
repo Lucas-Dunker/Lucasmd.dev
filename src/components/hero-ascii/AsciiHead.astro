@@ -1,0 +1,130 @@
+---
+// Colored-ASCII animation of me!
+// Each frame of headspin.mov was pre-rendered to a grid of
+// monospace glyphs (glyph picked by luminance, tinted from a 5-color palette)
+// by src/scripts/generate.py. See that script to regenerate frames.json.
+import {
+  cols,
+  rows,
+  palette,
+  frames,
+  frameToHtml,
+  shineLength,
+} from "./frames";
+
+// Poster frame: the frame with the longest sunglasses shine
+const posterHtml = frameToHtml(
+  frames.reduce((best, f) => (shineLength(f) > shineLength(best) ? f : best)),
+);
+
+// The grid these glyph sizes were tuned against. Sizing in proportion to it
+// means regenerating frames.json at a finer --cols buys detail at the same
+// on-screen size, rather than a head that grows with the row count.
+const REF = { cols: 45, rows: 28, vw: 3.4, svh: 1.5, px: 20 };
+const fontSize = [
+  `${((REF.vw * REF.cols) / cols).toFixed(3)}vw`,
+  `${((REF.svh * REF.rows) / rows).toFixed(3)}svh`,
+  `${((REF.px * REF.rows) / rows).toFixed(2)}px`,
+].join(", ");
+
+// Palette -> scoped color rules (.c0 .. .cN) generated from the JSON.
+const paletteCss = palette
+  .map((hex, i) => `.ascii-head-pre .c${i}{color:${hex}}`)
+  .join("");
+---
+
+<div class="ascii-head" aria-hidden="true">
+  <pre
+    id="ascii-head-pre"
+    class="ascii-head-pre"
+    style={`width:${cols}ch;height:${rows}em;font-size:min(${fontSize})`}
+    set:html={posterHtml}
+  />
+</div>
+
+<style set:html={paletteCss}></style>
+
+<style>
+  .ascii-head {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .ascii-head-pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    line-height: 1;
+    overflow: hidden;
+    letter-spacing: 0;
+    white-space: pre;
+    user-select: none;
+    filter: drop-shadow(0 1px 0 var(--paper));
+  }
+
+  .ascii-head-pre :global(.cw) {
+    color: #ffffff;
+  }
+  :root:not(.dark) .ascii-head-pre :global(.cw) {
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.55);
+  }
+</style>
+
+<script>
+  import { fps, frames, frameToHtml } from "./frames";
+
+  const pre = document.getElementById("ascii-head-pre");
+  if (pre && frames.length) {
+    // Build each frame's HTML on first use and memoize it
+    const cache = new Array<string>(frames.length);
+    const htmlAt = (i: number) => (cache[i] ??= frameToHtml(frames[i]));
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const frameDur = 1000 / fps;
+    let played = frameDur / 4;
+    let runFrom = 0; // timestamp this run of the loop began, 0 when paused
+    let cur = -1;
+    let raf = 0;
+    let onScreen = false;
+
+    const tick = (t: number) => {
+      if (!runFrom) runFrom = t;
+      const idx = Math.floor((played + t - runFrom) / frameDur) % frames.length;
+      if (idx !== cur) {
+        cur = idx;
+        pre.innerHTML = htmlAt(idx);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    const play = () => {
+      if (raf || reduceMotion || document.hidden || !onScreen) return;
+      raf = requestAnimationFrame(tick);
+    };
+    const pause = () => {
+      if (!raf) return;
+      if (runFrom) played += performance.now() - runFrom;
+      runFrom = 0;
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    // Only animate while the head is actually in the viewport
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        onScreen ? play() : pause();
+      },
+      { threshold: 0.05 },
+    );
+    io.observe(pre);
+
+    // Pause with the tab hidden
+    document.addEventListener("visibilitychange", () => {
+      document.hidden ? pause() : play();
+    });
+  }
+</script>

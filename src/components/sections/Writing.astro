@@ -1,6 +1,7 @@
 ---
 import Gallery from "../Gallery.astro";
 import chairGif from "../../assets/LucasMD-Chair-cropped.gif";
+import { getPosts, postHref, formatDate } from "../../lib/posts";
 
 import Kilimanjaro from "../../assets/writingPictures/Kilimanjaro.jpeg";
 import Zermatt from "../../assets/writingPictures/Zermatt.jpeg";
@@ -8,6 +9,8 @@ import Pisgah from "../../assets/writingPictures/Pisgah.jpg";
 import WATERFALL from "../../assets/writingPictures/WATERFALL.jpg";
 import Sunset from "../../assets/writingPictures/Sunset.jpg";
 import Summit from "../../assets/writingPictures/Summit.jpg";
+
+const posts = await getPosts();
 
 const photos = [
   { src: Kilimanjaro, label: "Kilimanjaro" },
@@ -28,10 +31,33 @@ const photos = [
 
     <div class="writing-grid">
       <div class="writing-body">
-        <p class="section-lede reveal">
-          A field notebook of essays, trip reports, and things I'm thinking
-          through is on its way — for real this time!
-        </p>
+        {
+          posts.length === 0 ? (
+            <p class="section-lede reveal">
+              A field notebook of essays, trip reports, and things I'm thinking
+              through is on its way — for real this time!
+            </p>
+          ) : (
+            <ul class="post-list reveal">
+              {posts.map((post) => (
+                <li class="post-item">
+                  <a href={postHref(post)} class="post-link">
+                    <time class="eyebrow" datetime={post.data.date.toISOString()}>
+                      {formatDate(post.data.date)}
+                    </time>
+                    <span class="post-name">
+                      {post.data.title}
+                      {post.data.draft && <span class="post-draft">draft</span>}
+                    </span>
+                    {post.data.description && (
+                      <span class="post-desc">{post.data.description}</span>
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
 
         <div class="reveal" data-delay="2">
           <Gallery items={photos} caption="Where I've been" />
@@ -58,6 +84,58 @@ const photos = [
     gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
   }
+  /* The body stacks the post list (or the teaser) above the photo gallery;
+     Tailwind's preflight zeroes their margins, so space them here. */
+  .writing-body > * + * {
+    margin-top: 2.5rem;
+  }
+
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .post-item + .post-item {
+    border-top: 1px solid var(--line);
+  }
+  .post-link {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1.1rem 0;
+    text-decoration: none;
+    color: var(--ink);
+    transition: opacity 0.2s ease;
+  }
+  .post-item:first-child .post-link {
+    padding-top: 0;
+  }
+  .post-link:hover {
+    opacity: 0.6;
+  }
+  .post-name {
+    font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+    line-height: 1.35;
+  }
+  .post-draft {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.1rem 0.45rem;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+  }
+  .post-desc {
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 34rem;
+  }
+
   .writing-figure {
     margin: 0;
     display: flex;
