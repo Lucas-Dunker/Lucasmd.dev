@@ -14,6 +14,7 @@ My personal website!
 ## Design
 
 - Fonts: [Mansalva](https://fontsource.org/fonts/mansalva) (display) · [Inter](https://fontsource.org/fonts/inter) (body) · [IBM Plex Mono](https://fontsource.org/fonts/ibm-plex-mono) (labels)
+- ASCII + Lawn Chair animations: the amazingly talented [Sorindra Birjah](https://steamcommunity.com/id/thisguyisprettycoolandsingle/images/)
 
 ## Development
 
