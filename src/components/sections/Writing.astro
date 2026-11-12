@@ -34,15 +34,18 @@ const photos = [
         {
           posts.length === 0 ? (
             <p class="section-lede reveal">
-              A field notebook of essays, trip reports, and things I'm thinking
-              through is on its way — for real this time!
+              A collection of essays, trip reports, and things I'm thinking
+              through is on its way, for real this time!
             </p>
           ) : (
             <ul class="post-list reveal">
               {posts.map((post) => (
                 <li class="post-item">
                   <a href={postHref(post)} class="post-link">
-                    <time class="eyebrow" datetime={post.data.date.toISOString()}>
+                    <time
+                      class="eyebrow"
+                      datetime={post.data.date.toISOString()}
+                    >
                       {formatDate(post.data.date)}
                     </time>
                     <span class="post-name">
